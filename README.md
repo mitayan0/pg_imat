@@ -75,13 +75,11 @@ GROUP BY cab_type_id, DATE_TRUNC('hour', started_at);
 
 Run the create_imat function.
 
--- 7️⃣ Register the aggregate as an IMAT
-SELECT imat.create_imat('trips_ts_v10_hourly_agg');
 
--- 8️⃣ Check configuration
+-- 7️⃣ Check configuration
 SELECT * FROM imat.imat_config;
 
--- 9️⃣ Verify aggregate output
-SELECT * FROM imat.trips_ts_v10_hourly_agg;
+-- 8️⃣ Verify aggregate output
+SELECT * FROM imat.trips_ts_v1_hourly_agg;
 
 ```
