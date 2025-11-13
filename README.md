@@ -73,7 +73,7 @@ GROUP BY cab_type_id, DATE_TRUNC('hour', started_at);
 
 -- 6️⃣ Create the IMAT function
 
-Run the create_imat function.
+SELECT create_imat('trips_ts_v1_hourly_agg', 'public');
 
 
 -- 7️⃣ Check configuration
