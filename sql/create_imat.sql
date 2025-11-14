@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION create_imat(
-    p_object_name TEXT,     -- Common name (e.g., 't1_agg'), MV name and target table name
+    p_object_name TEXT, 	-- Common name (e.g., 't1_agg'), MV name and target table name
     p_schema_name TEXT DEFAULT 'public' -- Schema for the *aggregate table*
 )
 RETURNS void AS
@@ -26,6 +26,7 @@ DECLARE
     v_match TEXT[];
     v_col_expr TEXT;
     v_col_expr_raw TEXT;
+    v_col_expr_no_alias TEXT; -- NEW: Variable to hold the expression without table alias
     v_alias TEXT;
     v_col_name TEXT;
     v_col_data_type TEXT;
@@ -60,7 +61,7 @@ DECLARE
     
     -- Variables for Dynamic Execution
     v_placeholder_constraint TEXT := '1=1'; 
-    v_using_key_vars TEXT := '';           
+    v_using_key_vars TEXT := '';            
     
     v_all_into_vars TEXT := ''; 
     v_insert_key_cols TEXT := '';
@@ -146,8 +147,7 @@ BEGIN
         v_alias := NULL;
         FOR v_alias_map IN SELECT * FROM jsonb_each(all_columns_info)
         LOOP
-            -- V10 FIX: Check if the GROUP BY expression (e.g., 'p.user_id') matches the 
-            -- SELECT expression (e.g., 'p.user_id') OR the SELECT alias (e.g., 'user_id').
+            -- Check if the GROUP BY expression matches the SELECT expression or the SELECT alias.
             IF v_alias_map.value->>'expr' = v_col_expr OR v_alias_map.key = v_col_expr THEN
                 v_alias := v_alias_map.key;
                 EXIT;
@@ -178,8 +178,13 @@ BEGIN
         v_declare_key_vars := v_declare_key_vars || format('v_key_%s %s; ', v_i, v_col_data_type);
         v_delete_where_clause := v_delete_where_clause || format(' AND %I = v_key_%s', v_alias, v_i);
         
-        -- The key change check uses the full expression against NEW/OLD context
-        v_key_changed_check := v_key_changed_check || format('OLD.%s IS DISTINCT FROM NEW.%s OR ', v_col_expr, v_col_expr);
+        -- START FIX: Remove table alias from the expression for the OLD/NEW check
+        -- This ensures we use column names (e.g., user_id) instead of aliased names (e.g., p.user_id)
+        v_col_expr_no_alias := regexp_replace(v_col_expr, '^("?\w+"?\.)?', '');
+
+        -- The key change check now uses the alias-free column name against OLD/NEW context
+        v_key_changed_check := v_key_changed_check || format('OLD.%I IS DISTINCT FROM NEW.%I OR ', v_col_expr_no_alias, v_col_expr_no_alias);
+        -- END FIX
         
         -- Collect the full key expression for the GROUP BY clause of the backfill/recalc queries
         v_group_by_expressions := v_group_by_expressions || format('%s, ', v_col_expr);
