@@ -1,28 +1,35 @@
-# pg_imat — Incremental Materialized Aggregation Tables for PostgreSQL
+# pg_imat - PostgreSQL Incremental Materialized Tables
 
-pg_imat is a standalone PostgreSQL function that automates the creation and maintenance of Incremental Materialized Aggregation Tables (IMATs).
-It provides a way to define aggregate tables that stay in sync with one or more base tables through automatically generated triggers and logic — without needing to manually refresh a materialized view.
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-12%2B-blue.svg)](https://www.postgresql.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-In essence, pg_imat lets you transform any SELECT ... GROUP BY query into a live, self-updating aggregate table, keeping your summary data accurate in real time.
+## Overview
 
----
+pg_imat (PostgreSQL Incremental Materialized Tables) is an advanced database extension that transforms traditional PostgreSQL materialized views into high-performance, automatically maintained tables. It provides near real-time data synchronization with significantly better performance than standard materialized view refreshes.
 
-## 🚀 Features
+## 🚀 Key Features
 
-- ✅ **Automatic aggregation** — no need to refresh manually.  
-- 🔄 **Real-time sync** — changes in base tables propagate automatically.  
-- 🧩 **Join & multi-table support** *(planned)* — aggregate across multiple sources.  
-- 🗂️ **Config tracking** — every IMAT registered in `imat.imat_config`.  
-- 📊 **Flexible grouping** — supports time truncation (`DATE_TRUNC`) and arbitrary GROUP BYs.  
-- 🕒 **Compatible with partitioned tables** — works seamlessly on range or hash partitions.  
+- **Automatic Maintenance**: Converts materialized views into self-maintaining tables with automatic triggers
+- **Real-time Updates**: Changes to base tables automatically propagate to aggregated tables
+- **Smart Column Detection**: Automatically identifies GROUP BY columns vs aggregate columns
+- **Performance Optimized**: Uses efficient table swapping instead of incremental updates
+- **Zero Downtime Migration**: Seamlessly converts existing materialized views
+- **Flexible Schema Support**: Works with complex queries including JOINs and multiple aggregations
 
----
+## 📋 Prerequisites
 
-## 🧠 Concept
+- PostgreSQL 12 or higher
+- Existing materialized views with GROUP BY clauses
+- Appropriate database permissions for creating triggers and functions
 
-An **IMAT** behaves like a *materialized view that maintains itself*.
+## 🔧 Installation
 
----
+### Step 1: Create Required Schema
+
+```sql
+CREATE SCHEMA IF NOT EXISTS imat;
+
+```
 
 ## Example
 
