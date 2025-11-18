@@ -1,7 +1,6 @@
 # pg_imat - PostgreSQL Incremental Materialized Tables
 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-12%2B-blue.svg)](https://www.postgresql.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ## Overview
 
