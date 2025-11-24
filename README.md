@@ -79,21 +79,24 @@ GROUP BY region, product_id;
 
 ### 2. Convert to Incremental Table
 
-Call the `create_imat` function with the name of your materialized view.
+Call the `create_imat` function with the name of your materialized view. By default, the new table will be created in the `public` schema.
 
 ```sql
--- This will create a new table 'my_sales_summary' in the 'imat' schema
+-- This will create a new table 'my_sales_summary' in the 'public' schema
 -- and set up all necessary triggers.
 SELECT create_imat('my_sales_summary');
+
+-- Optionally, you can specify a target schema:
+-- SELECT create_imat('my_sales_summary', 'analytics');
 ```
 
 ### 3. Enjoy Real-Time Data
 
-Now, whenever you insert, update, or delete rows in the `sales` table, `imat.my_sales_summary` will be automatically updated.
+Now, whenever you insert, update, or delete rows in the `sales` table, `my_sales_summary` will be automatically updated.
 
 ```sql
 -- Query the auto-maintained table
-SELECT * FROM imat.my_sales_summary;
+SELECT * FROM my_sales_summary;
 ```
 
 ---
@@ -107,9 +110,6 @@ SELECT * FROM imat.my_sales_summary;
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
